@@ -185,6 +185,10 @@ def convert_currency(value, from_currency, to_currency, rates):
 # AI Chat Assistant Function
 # ---------------------------
 def query_llm(prompt):
+    """Query OpenAI's ChatGPT API for answers."""
+    if not openai_api_key:
+        return "API key not found. Please set it in .streamlit/secrets.toml or environment variables."
+
     try:
         if not openai_api_key:
             return "API key not found. Please set it in .streamlit/secrets.toml."
@@ -201,7 +205,7 @@ def query_llm(prompt):
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"Error querying AI: {e}"
-
+    
 # ---------------------------
 # Main App Function
 # ---------------------------
