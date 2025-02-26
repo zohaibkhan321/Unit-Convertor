@@ -1,7 +1,11 @@
 import streamlit as st
 import openai
 import requests
+import os
 
+# Fetch API keys from secrets or environment variables
+openai_api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
+exchange_rate_api_key = st.secrets.get("EXCHANGE_RATE_API_KEY", os.getenv("EXCHANGE_RATE_API_KEY"))
 # ---------------------------
 # Conversion Data & Functions
 # ---------------------------
@@ -155,11 +159,10 @@ def convert_units(category, value, from_unit, to_unit):
 # ---------------------------
 def fetch_exchange_rates():
     """Fetch live exchange rates using ExchangeRate-API."""
-    api_key = st.secrets.get("EXCHANGE_RATE_API_KEY")
-    if not api_key:
+    if not exchange_rate_api_key:
         st.error("Exchange Rate API key not found. Please set it in .streamlit/secrets.toml.")
         return {}
-    url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/USD"
+    url = f"https://v6.exchangerate-api.com/v6/{exchange_rate_api_key}/latest/USD"
     try:
         response = requests.get(url)
         data = response.json()
@@ -183,10 +186,9 @@ def convert_currency(value, from_currency, to_currency, rates):
 # ---------------------------
 def query_llm(prompt):
     try:
-        api_key = st.secrets.get("OPENAI_API_KEY")
-        if not api_key:
+        if not openai_api_key:
             return "API key not found. Please set it in .streamlit/secrets.toml."
-        openai.api_key = api_key
+        openai.api_key = openai_api_key
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
